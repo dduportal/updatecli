@@ -4,17 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/updatecli/updatecli/pkg/core/pipeline/scm"
 	"github.com/updatecli/updatecli/pkg/core/result"
 )
 
 // Target updates a scm repository based on the modified yaml file.
-func (t *Toml) Target(source string, scm scm.ScmHandler, dryRun bool, resultTarget *result.Target) error {
-
+func (t *Toml) Target(source string, dryRun bool, resultTarget *result.Target) error {
 	rootDir := ""
-	if scm != nil {
-		rootDir = scm.GetDirectory()
-	}
 
 	for i := range t.contents {
 		filename := t.contents[i].FilePath
