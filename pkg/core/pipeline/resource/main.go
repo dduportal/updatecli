@@ -92,9 +92,10 @@ func New(rs ResourceConfig) (resource Resource, err error) {
 
 		return dockerimage.New(rs.Spec)
 
-	case "gitbranch":
+	// TODO
+	// case "gitbranch":
 
-		return gitbranch.New(rs.Spec)
+	// 	return gitbranch.New(rs.Spec)
 
 	case "gitea/branch":
 
@@ -104,9 +105,10 @@ func New(rs ResourceConfig) (resource Resource, err error) {
 
 		return giteaTag.New(rs.Spec)
 
-	case "gitea/release":
+	// TODO
+	// case "gitea/release":
 
-		return giteaRelease.New(rs.Spec)
+	// 	return giteaRelease.New(rs.Spec)
 
 	case "githubrelease":
 
@@ -124,9 +126,10 @@ func New(rs ResourceConfig) (resource Resource, err error) {
 
 		return gitlabRelease.New(rs.Spec)
 
-	case "gittag":
+	// TODO
+	// case "gittag":
 
-		return gittag.New(rs.Spec)
+	// 	return gittag.New(rs.Spec)
 
 	case "golang":
 
