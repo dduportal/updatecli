@@ -8,18 +8,13 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/updatecli/updatecli/pkg/core/pipeline/scm"
 	"github.com/updatecli/updatecli/pkg/core/result"
 	"github.com/updatecli/updatecli/pkg/core/text"
 )
 
 // Target creates or updates a file from a source control management system.
 // The default content is the value retrieved from source
-func (f *File) Target(source string, scm scm.ScmHandler, dryRun bool, resultTarget *result.Target) error {
-	if scm != nil {
-		f.UpdateAbsoluteFilePath(scm.GetDirectory())
-	}
-
+func (f *File) Target(source string, dryRun bool, resultTarget *result.Target) error {
 	var files []string
 
 	if f.spec.Line > 0 && f.spec.ForceCreate {
