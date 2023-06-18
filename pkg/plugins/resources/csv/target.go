@@ -4,17 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/updatecli/updatecli/pkg/core/pipeline/scm"
 	"github.com/updatecli/updatecli/pkg/core/result"
 )
 
 // Target updates a scm repository based on the modified yaml file.
-func (c *CSV) Target(source string, scm scm.ScmHandler, dryRun bool, resultTarget *result.Target) error {
-
+func (c *CSV) Target(source string, dryRun bool, resultTarget *result.Target) error {
+	// TODO: pass workingDir as argument
 	rootDir := ""
-	if scm != nil {
-		rootDir = scm.GetDirectory()
-	}
 
 	newValue := source
 	if c.spec.Value != "" {
