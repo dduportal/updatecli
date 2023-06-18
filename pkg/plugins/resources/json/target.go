@@ -6,17 +6,12 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/updatecli/updatecli/pkg/core/pipeline/scm"
 	"github.com/updatecli/updatecli/pkg/core/result"
 )
 
 // Target updates a scm repository based on the modified yaml file.
-func (j *Json) Target(source string, scm scm.ScmHandler, dryRun bool, resultTarget *result.Target) error {
-
+func (j *Json) Target(source string, dryRun bool, resultTarget *result.Target) error {
 	rootDir := ""
-	if scm != nil {
-		rootDir = scm.GetDirectory()
-	}
 
 	if len(j.spec.Value) == 0 {
 		j.spec.Value = source
