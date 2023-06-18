@@ -3,13 +3,11 @@ package gomod
 import (
 	"fmt"
 
-	"github.com/updatecli/updatecli/pkg/core/pipeline/scm"
 	"github.com/updatecli/updatecli/pkg/core/result"
-	"github.com/updatecli/updatecli/pkg/plugins/utils"
 )
 
 // Target is not supported for the Golang resource
-func (g *GoMod) Target(source string, scm scm.ScmHandler, dryRun bool, resultTarget *result.Target) (err error) {
+func (g *GoMod) Target(source string, dryRun bool, resultTarget *result.Target) (err error) {
 
 	version := source
 	if g.spec.Version != "" {
@@ -19,9 +17,6 @@ func (g *GoMod) Target(source string, scm scm.ScmHandler, dryRun bool, resultTar
 	resultTarget.NewInformation = version
 
 	filename := g.filename
-	if scm != nil {
-		filename = utils.JoinFilePathWithWorkingDirectoryPath(g.filename, scm.GetDirectory())
-	}
 
 	resultTarget.OldInformation, resultTarget.NewInformation, resultTarget.Changed, err = g.setVersion(version, filename, dryRun)
 	if err != nil {
