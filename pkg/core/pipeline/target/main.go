@@ -130,6 +130,14 @@ func (t *Target) Run(source string, o *Options) (err error) {
 
 		logrus.Infof("\n\u26A0 While nothing change in the current pipeline run, according to the git history, some commits will be pushed\n")
 	}
+	// TODO
+	// if scm != nil {
+	// 	// Once the changes have been applied inside the scm's temp directory, then we have to get the list of these changes
+	// 	resultTarget.Files, err = scm.GetChangedFiles(scm.GetDirectory())
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	if !o.DryRun {
 		if t.Result.Changed {

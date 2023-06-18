@@ -4,31 +4,8 @@ import (
 	"fmt"
 
 	"github.com/sirupsen/logrus"
-	"github.com/updatecli/updatecli/pkg/core/pipeline/scm"
 	"github.com/updatecli/updatecli/pkg/core/result"
 )
-
-func (s *Shell) Target(source string, scm scm.ScmHandler, dryRun bool, resultTarget *result.Target) error {
-	getDir := ""
-	if scm != nil {
-		getDir = scm.GetDirectory()
-	}
-
-	err := s.target(source, getDir, dryRun, resultTarget)
-	if err != nil {
-		return err
-	}
-
-	if scm != nil {
-		// Once the changes have been applied inside the scm's temp directory, then we have to get the list of these changes
-		resultTarget.Files, err = scm.GetChangedFiles(scm.GetDirectory())
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
 
 // Target executes the provided command (concatenated with the source) to apply the change.
 // The command is expected, if it changes something, to print the new value to the stdout
@@ -37,7 +14,8 @@ func (s *Shell) Target(source string, scm scm.ScmHandler, dryRun bool, resultTar
 //   - Any other exit code means "failed command with no change"
 //
 // The environment variable 'DRY_RUN' is set to true or false based on the input parameter (e.g. 'updatecli diff' or 'apply'?)
-func (s *Shell) target(source, workingDir string, dryRun bool, resultTarget *result.Target) error {
+func (s *Shell) Target(source string, dryRun bool, resultTarget *result.Target) error {
+	workingDir := ""
 
 	// Ensure environment variable(s) are up to date
 	// either it already has a value specified, or it retrieves
