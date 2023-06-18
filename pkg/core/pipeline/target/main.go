@@ -92,20 +92,6 @@ func (t *Target) Run(source string, o *Options) (err error) {
 	// after templating
 	t.Result.Name = t.Config.ResourceConfig.Name
 
-	// If no scm configuration provided then stop early
-	if t.Scm == nil {
-		err = target.Target(source, nil, o.DryRun, &t.Result)
-		if err != nil {
-			failTargetRun()
-			return err
-		}
-
-		// Could be improve to show attention description in yellow, success in green, failure in red
-		logrus.Infof("%s - %s", t.Result.Result, t.Result.Description)
-
-		return nil
-	}
-
 	_, err = t.Check()
 	if err != nil {
 		failTargetRun()
@@ -122,7 +108,7 @@ func (t *Target) Run(source string, o *Options) (err error) {
 		return err
 	}
 
-	err = target.Target(source, s, o.DryRun, &t.Result)
+	err = target.Target(source, o.DryRun, &t.Result)
 	if err != nil {
 		failTargetRun()
 		return err
