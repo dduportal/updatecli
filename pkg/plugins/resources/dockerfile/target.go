@@ -2,24 +2,14 @@ package dockerfile
 
 import (
 	"fmt"
-	"path/filepath"
 	"sort"
 
 	"github.com/sirupsen/logrus"
-	"github.com/updatecli/updatecli/pkg/core/pipeline/scm"
 	"github.com/updatecli/updatecli/pkg/core/result"
 )
 
 // Target updates a targeted Dockerfile from source control management system
-func (d *Dockerfile) Target(source string, scm scm.ScmHandler, dryRun bool, resultTarget *result.Target) (err error) {
-	if !filepath.IsAbs(d.spec.File) && scm != nil {
-		d.spec.File = filepath.Join(scm.GetDirectory(), d.spec.File)
-		logrus.Debugf("Relative path detected: changing to absolute path from SCM: %q", d.spec.File)
-	}
-	return d.target(source, dryRun, resultTarget)
-}
-
-func (d *Dockerfile) target(source string, dryRun bool, resultTarget *result.Target) (err error) {
+func (d *Dockerfile) Target(source string, dryRun bool, resultTarget *result.Target) (err error) {
 	dockerfileContent, err := d.contentRetriever.ReadAll(d.spec.File)
 	if err != nil {
 		return err
