@@ -9,7 +9,6 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/updatecli/updatecli/pkg/core/pipeline/scm"
 	"github.com/updatecli/updatecli/pkg/core/result"
 	"github.com/updatecli/updatecli/pkg/core/text"
 
@@ -20,12 +19,7 @@ import (
 // https://github.com/goccy/go-yaml/issues/217
 
 // Target updates a scm repository based on the modified yaml file.
-func (y *Yaml) Target(source string, scm scm.ScmHandler, dryRun bool, resultTarget *result.Target) error {
-
-	if scm != nil {
-		y.UpdateAbsoluteFilePath(scm.GetDirectory())
-	}
-
+func (y *Yaml) Target(source string, dryRun bool, resultTarget *result.Target) error {
 	// Test if target reference a file with a prefix like https:// or file://, as we don't know how to update those files.
 	for _, file := range y.files {
 		if text.IsURL(file.originalFilePath) {

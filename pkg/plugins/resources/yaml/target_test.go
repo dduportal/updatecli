@@ -6,7 +6,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/updatecli/updatecli/pkg/core/pipeline/scm"
 	"github.com/updatecli/updatecli/pkg/core/result"
 	"github.com/updatecli/updatecli/pkg/core/text"
 )
@@ -291,7 +290,7 @@ github:
 			assert.NoError(t, err)
 
 			gotResult := result.Target{}
-			gotErr := y.Target(tt.inputSourceValue, nil, tt.dryRun, &gotResult)
+			gotErr := y.Target(tt.inputSourceValue, tt.dryRun, &gotResult)
 			if tt.wantedError {
 				assert.Error(t, gotErr)
 				return
@@ -299,141 +298,6 @@ github:
 
 			require.NoError(t, gotErr)
 			assert.Equal(t, tt.wantedResult, gotResult.Changed)
-
-			for filePath := range y.files {
-				defer os.Remove(filePath)
-				assert.Equal(t, tt.wantedContents[filePath], mockedText.Contents[filePath])
-			}
-		})
-	}
-}
-
-func Test_TargetFromSCM(t *testing.T) {
-	tests := []struct {
-		name             string
-		spec             Spec
-		files            map[string]file
-		scm              scm.ScmHandler
-		inputSourceValue string
-		mockedContents   map[string]string
-		mockedError      error
-		wantedFiles      []string
-		wantedContents   map[string]string
-		wantedResult     bool
-		wantedError      bool
-		dryRun           bool
-	}{
-		{
-			name: "Passing case with both input source and specified value (specified value should be used)",
-			spec: Spec{
-				File:  "test.yaml",
-				Key:   "github.owner",
-				Value: "obiwankenobi",
-			},
-			files: map[string]file{
-				"/tmp/test.yaml": {
-					filePath:         "/tmp/test.yaml",
-					originalFilePath: "/tmp/test.yaml",
-				},
-			},
-			inputSourceValue: "olblak",
-			mockedContents: map[string]string{
-				"/tmp/test.yaml": `---
-github:
-  owner: olblak
-  repository: charts
-`,
-			},
-			wantedFiles: []string{
-				"/tmp/test.yaml",
-			},
-			// Note: the re-encoded file doesn't contain any separator anymore
-			wantedContents: map[string]string{
-				"/tmp/test.yaml": `---
-github:
-  owner: obiwankenobi
-  repository: charts
-`,
-			},
-			wantedResult: true,
-		},
-		{
-			name: "Passing case with 'Files', both input source and specified value (specified value should be used)",
-			spec: Spec{
-				Files: []string{
-					"test.yaml",
-					"bar.yaml",
-				},
-				Key:   "github.owner",
-				Value: "obiwankenobi",
-			},
-			files: map[string]file{
-				"/tmp/test.yaml": {
-					filePath:         "/tmp/test.yaml",
-					originalFilePath: "/tmp/test.yaml",
-				},
-				"/tmp/bar.yaml": {
-					filePath:         "/tmp/bar.yaml",
-					originalFilePath: "/tmp/bar.yaml",
-				},
-			},
-			inputSourceValue: "olblak",
-			mockedContents: map[string]string{
-				"/tmp/test.yaml": `---
-github:
-  owner: olblak
-  repository: charts
-`,
-				"/tmp/bar.yaml": `---
-github:
-  owner: asterix
-  repository: charts
-`,
-			},
-			// returned files are sorted
-			wantedFiles: []string{
-				"/tmp/bar.yaml",
-				"/tmp/test.yaml",
-			},
-			// Note: the updated files don't contain separator anymore
-			wantedContents: map[string]string{
-				"/tmp/test.yaml": `---
-github:
-  owner: obiwankenobi
-  repository: charts
-`,
-				"/tmp/bar.yaml": `---
-github:
-  owner: obiwankenobi
-  repository: charts
-`,
-			},
-			wantedResult: true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			mockedText := text.MockTextRetriever{
-				Contents: tt.mockedContents,
-				Err:      tt.mockedError,
-			}
-
-			y, err := New(tt.spec)
-			y.contentRetriever = &mockedText
-			y.files = tt.files
-
-			assert.NoError(t, err)
-
-			gotResult := result.Target{}
-			gotErr := y.Target(tt.inputSourceValue, tt.scm, tt.dryRun, &gotResult)
-			if tt.wantedError {
-				assert.Error(t, gotErr)
-				return
-			}
-
-			require.NoError(t, gotErr)
-			assert.Equal(t, tt.wantedResult, gotResult.Changed)
-			assert.Equal(t, tt.wantedFiles, gotResult.Files)
 
 			for filePath := range y.files {
 				defer os.Remove(filePath)
