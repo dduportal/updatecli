@@ -5,15 +5,13 @@ import (
 	"path/filepath"
 
 	"github.com/sirupsen/logrus"
-	"github.com/updatecli/updatecli/pkg/core/pipeline/scm"
 	"github.com/updatecli/updatecli/pkg/core/result"
 	"github.com/updatecli/updatecli/pkg/plugins/resources/yaml"
 )
 
 // Target updates helm chart, it receives the default source value and a "dry-run" flag
 // then return if it changed something or failed
-func (c *Chart) Target(source string, scm scm.ScmHandler, dryRun bool, resultTarget *result.Target) error {
-
+func (c *Chart) Target(source string, dryRun bool, resultTarget *result.Target) error {
 	var out bytes.Buffer
 	err := c.ValidateTarget()
 	if err != nil {
@@ -35,7 +33,7 @@ func (c *Chart) Target(source string, scm scm.ScmHandler, dryRun bool, resultTar
 		return err
 	}
 
-	err = yamlResource.Target(source, scm, dryRun, resultTarget)
+	err = yamlResource.Target(source, dryRun, resultTarget)
 
 	if err != nil {
 		return err
@@ -44,9 +42,6 @@ func (c *Chart) Target(source string, scm scm.ScmHandler, dryRun bool, resultTar
 	}
 
 	chartPath := c.spec.Name
-	if scm != nil {
-		chartPath = filepath.Join(scm.GetDirectory(), c.spec.Name)
-	}
 
 	err = c.MetadataUpdate(chartPath, dryRun)
 	if err != nil {
